@@ -89,3 +89,24 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// implementing the syscall handler sys_setpriority. In this function, we need to check that the new priority is valid (in the range of [0, 200]), 
+// update the process’s priority, and, if the new priority is larger than the old priority, call yield to reschedule. 
+
+int sys_setpriority(void) {
+  struct proc *proc = myproc();
+  int new_prior;
+  int old_prior;
+
+  argint(0, &new_prior);
+  old_prior = proc->priority;
+  proc->priority = new_prior;
+  if (0 <= new_prior && new_prior <= 200) {
+    if (new_prior > old_prior)
+    {
+      yield();
+    }
+    return 0;
+  }
+  return -1;
+}
